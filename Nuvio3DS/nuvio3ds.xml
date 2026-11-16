@@ -1,0 +1,13 @@
+<serviceAccessControl>
+	<item>mvd:STD</item>
+	<item>ndsp:DSP</item>
+	<item>soc:U</item>
+	<item>http:C</item>
+	<item>ssl:C</item>
+	<item>fs:USER</item>
+	<item>cfg:u</item>
+	<item>ptm:u</item>
+	<item>gsp::Gpu</item>
+	<item>hid:USER</item>
+	<item>apt:U</item>
+</serviceAccessControl>
