@@ -16,10 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install 3DS portlibs and makerom
+      - name: Install makerom
         run: |
-          dkp-pacman -Syu --noconfirm 3ds-curl 3ds-mbedtls 3ds-zlib
-          apt-get update && apt-get install -y curl unzip
           curl -fsSL https://github.com/3DSGuy/Project_CTR/releases/download/makerom-v0.18.4/makerom-v0.18.4-ubuntu_x86_64.zip -o /tmp/makerom.zip
           unzip -o /tmp/makerom.zip -d /usr/local/bin
           chmod +x /usr/local/bin/makerom
@@ -39,12 +37,23 @@ jobs:
             **/Nuvio3DS.cia
             **/nuvio3ds.xml
 
-      - name: Publish direct .cia release for FBI QR
-        uses: softprops/action-gh-release@v2
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/download-artifact@v4
         with:
-          tag_name: latest
-          name: Nuvio3DS Latest Build
-          files: |
-            **/Nuvio3DS.cia
-            **/Nuvio3DS.3dsx
-            **/nuvio3ds.xml
+          name: Nuvio3DS-binaries
+          path: dist
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" dist/* \
+            --title "Nuvio3DS v1.0.${{ github.run_number }}" \
+            --notes "Compiled Nuvio3DS (.cia + .3dsx)" \
+            --latest
